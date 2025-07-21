@@ -139,6 +139,19 @@
                 font-size: 0.9em;
             }
         }
+
+        #surpriseBtn, #backBtn {
+            position: relative;
+            z-index: 20; /* 确保按钮在canvas上方 */
+            -webkit-user-select: none;
+            user-select: none;
+        }
+        
+        /* 防止按钮触摸时触发页面滚动 */
+        html, body {
+            overflow: hidden;
+            height: 100%;
+        }
     </style>
 </head>
 <body>
@@ -172,6 +185,61 @@
     </div>
 
     <script>
+
+        // 修改触摸事件处理，添加按钮点击支持
+        function handleInteraction(e) {
+            // 检查是否点击了按钮
+            const target = e.target;
+            if (target.id === 'surpriseBtn' || target.id === 'backBtn' || 
+                target.closest('#surpriseBtn') || target.closest('#backBtn')) {
+                return; // 如果是按钮点击，不触发烟花
+            }
+            
+            let clientX, clientY;
+            
+            if (e.type.includes('touch')) {
+                e.preventDefault();
+                clientX = e.touches[0].clientX;
+                clientY = e.touches[0].clientY;
+            } else {
+                clientX = e.clientX;
+                clientY = e.clientY;
+            }
+            
+            createFirework(clientX, clientY);
+            tryPlayMusic();
+        }
+
+        // 修改按钮事件监听，添加触摸支持
+        function setupButton(btnId, handler) {
+            const btn = document.getElementById(btnId);
+            btn.addEventListener('click', handler);
+            btn.addEventListener('touchend', function(e) {
+                e.preventDefault(); // 防止触发两次
+                handler(e);
+            }, {passive: false});
+        }
+
+        // 替换原来的按钮事件绑定
+        setupButton('surpriseBtn', () => {
+            document.getElementById('message').classList.add('hidden');
+            document.getElementById('surpriseMessage').classList.remove('hidden');
+            
+            for (let i = 0; i < 5; i++) {
+                setTimeout(() => {
+                    const x = Math.random() * canvas.width;
+                    const y = Math.random() * canvas.height / 2;
+                    createFirework(x, y);
+                }, i * 200);
+            }
+        });
+
+        setupButton('backBtn', () => {
+            document.getElementById('message').classList.remove('hidden');
+            document.getElementById('surpriseMessage').classList.add('hidden');
+        });
+
+
         // 初始化画布
         const canvas = document.getElementById('fireworks');
         const ctx = canvas.getContext('2d');
