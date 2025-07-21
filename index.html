@@ -2,7 +2,7 @@
 <html lang="zh">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <title>🙏</title>
     <style>
         body {
@@ -15,32 +15,37 @@
             align-items: center;
             height: 100vh;
             color: white;
-            cursor: pointer;
+            -webkit-tap-highlight-color: transparent;
+            touch-action: manipulation;
         }
         
         #container {
             position: relative;
             text-align: center;
             z-index: 10;
+            padding: 20px;
+            width: 90%;
+            max-width: 600px;
         }
         
         h1 {
-            font-size: 3em;
+            font-size: 2.2em;
             text-shadow: 0 0 10px #00a8ff, 0 0 20px #00a8ff;
             margin-bottom: 20px;
             animation: glow 2s infinite alternate;
         }
         
         p {
-            font-size: 1.5em;
-            margin-bottom: 30px;
+            font-size: 1.2em;
+            margin-bottom: 25px;
             text-shadow: 0 0 5px #00ffaa;
+            line-height: 1.5;
         }
         
         #emoji {
-            font-size: 5em;
+            font-size: 4em;
             display: inline-block;
-            margin: 20px;
+            margin: 20px 0;
             animation: bounce 1s infinite alternate;
         }
         
@@ -48,16 +53,17 @@
             background: rgba(255, 255, 255, 0.2);
             border: 2px solid white;
             color: white;
-            padding: 15px 30px;
-            font-size: 1.2em;
+            padding: 12px 25px;
+            font-size: 1em;
             border-radius: 50px;
             cursor: pointer;
             transition: all 0.3s;
             backdrop-filter: blur(5px);
             margin: 10px;
+            outline: none;
         }
         
-        button:hover {
+        button:hover, button:active {
             background: rgba(255, 255, 255, 0.4);
             transform: scale(1.1);
         }
@@ -67,6 +73,7 @@
             top: 0;
             left: 0;
             z-index: 1;
+            display: block;
         }
         
         @keyframes glow {
@@ -88,31 +95,49 @@
             display: none;
         }
         
-        #message {
-            max-width: 600px;
-            margin: 0 auto;
-            padding: 20px;
+        #message, #surpriseMessage {
             background: rgba(0, 0, 0, 0.5);
             border-radius: 20px;
             backdrop-filter: blur(5px);
+            padding: 20px;
+            width: 100%;
+            box-sizing: border-box;
         }
         
         #music-controls {
             position: fixed;
-            bottom: 20px;
-            right: 20px;
+            bottom: 15px;
+            right: 15px;
             z-index: 100;
         }
         
         #music-btn {
-            width: 50px;
-            height: 50px;
+            width: 45px;
+            height: 45px;
             border-radius: 50%;
             background: rgba(255,255,255,0.2);
             display: flex;
             justify-content: center;
             align-items: center;
-            font-size: 1.5em;
+            font-size: 1.3em;
+            border: none;
+        }
+        
+        /* 移动端优化 */
+        @media (max-width: 480px) {
+            h1 {
+                font-size: 1.8em;
+            }
+            p {
+                font-size: 1em;
+            }
+            #emoji {
+                font-size: 3em;
+            }
+            button {
+                padding: 10px 20px;
+                font-size: 0.9em;
+            }
         }
     </style>
 </head>
@@ -123,7 +148,7 @@
         <div id="message">
             <h1>嘿嘿嘿</h1>
             <div id="emoji">🐱</div>
-            <p>点击屏幕任何地方放烟花解压</p>
+            <p>点击/触摸屏幕任何地方放烟花解压</p>
             <button id="surpriseBtn">看看我的诚意</button>
         </div>
         
@@ -141,25 +166,26 @@
     <div id="music-controls">
         <button id="music-btn">🎵</button>
         <audio id="bg-music" loop>
-            <!-- 使用轻松的背景音乐 -->
-            <source src="xiulianaiqing_Moodysson.MP3" type="audio/mpeg">
+            <source src="https://www.soundhelix.com/examples/mp3/SoundHelix-Song-8.mp3" type="audio/mpeg">
             您的浏览器不支持音频元素
         </audio>
     </div>
 
     <script>
-        // 烟花效果
+        // 初始化画布
         const canvas = document.getElementById('fireworks');
         const ctx = canvas.getContext('2d');
         
-        canvas.width = window.innerWidth;
-        canvas.height = window.innerHeight;
-        
-        window.addEventListener('resize', () => {
+        // 设置画布大小为窗口大小
+        function resizeCanvas() {
             canvas.width = window.innerWidth;
             canvas.height = window.innerHeight;
-        });
+        }
         
+        resizeCanvas();
+        window.addEventListener('resize', resizeCanvas);
+        
+        // 烟花粒子类
         class Particle {
             constructor(x, y, color) {
                 this.x = x;
@@ -197,6 +223,7 @@
         
         let particles = [];
         
+        // 创建烟花函数
         function createFirework(x, y) {
             const colors = ['#00a8ff', '#00ffaa', '#fbc531', '#e84118', '#9c88ff'];
             const particleCount = 150;
@@ -207,12 +234,14 @@
             }
             
             // emoji跳动效果
-            document.getElementById('emoji').style.transform = 'translateY(-30px)';
+            const emoji = document.getElementById('emoji');
+            emoji.style.transform = 'translateY(-30px)';
             setTimeout(() => {
-                document.getElementById('emoji').style.transform = 'translateY(0)';
+                emoji.style.transform = 'translateY(0)';
             }, 200);
         }
         
+        // 动画循环
         function animate() {
             requestAnimationFrame(animate);
             ctx.fillStyle = 'rgba(0, 0, 0, 0.1)';
@@ -223,11 +252,27 @@
         
         animate();
         
-        // 点击屏幕放烟花
-        window.addEventListener('click', (e) => {
-            createFirework(e.clientX, e.clientY);
+        // 点击/触摸事件处理
+        function handleInteraction(e) {
+            let clientX, clientY;
+            
+            // 判断是触摸事件还是鼠标事件
+            if (e.type.includes('touch')) {
+                e.preventDefault();
+                clientX = e.touches[0].clientX;
+                clientY = e.touches[0].clientY;
+            } else {
+                clientX = e.clientX;
+                clientY = e.clientY;
+            }
+            
+            createFirework(clientX, clientY);
             tryPlayMusic();
-        });
+        }
+        
+        // 添加事件监听（同时支持鼠标和触摸）
+        window.addEventListener('click', handleInteraction);
+        window.addEventListener('touchstart', handleInteraction, {passive: false});
         
         // 自动放烟花
         setInterval(() => {
