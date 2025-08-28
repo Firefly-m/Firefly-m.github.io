@@ -42,6 +42,17 @@
             line-height: 1.5;
         }
         
+        .blessing {
+            color: #ff9eb5;
+            font-weight: bold;
+            text-shadow: 0 0 10px #ff2e8b;
+            margin-top: 30px;
+            padding: 15px;
+            border-radius: 15px;
+            background: rgba(255, 255, 255, 0.1);
+            animation: pulse 3s infinite;
+        }
+        
         #emoji {
             font-size: 4em;
             display: inline-block;
@@ -86,6 +97,17 @@
             }
             to {
                 text-shadow: 0 0 20px #00a8ff, 0 0 30px #00a8ff, 0 0 40px #00ffaa;
+            }
+        }
+        
+        @keyframes pulse {
+            0%, 100% {
+                transform: scale(1);
+                box-shadow: 0 0 10px rgba(255, 46, 139, 0.5);
+            }
+            50% {
+                transform: scale(1.05);
+                box-shadow: 0 0 20px rgba(255, 46, 139, 0.8);
             }
         }
         
@@ -142,6 +164,10 @@
                 padding: 10px 20px;
                 font-size: 0.9em;
             }
+            .blessing {
+                font-size: 1em;
+                padding: 10px;
+            }
         }
     </style>
 </head>
@@ -160,7 +186,7 @@
             <p>总有些惊奇的际遇🎵</p>
             <p>比方说当我遇见你~</p>
             <div id="emoji">🌹</div>
-            <div class="blessing">祝盈霜每天开心每一天！</div>
+            <div class="blessing">祝我的A朋友永远幸福快乐，愿你的每一天都充满阳光与欢笑！</div>
             <button id="backBtn">返回</button>
         </div>
     </div>
@@ -380,8 +406,3 @@
     </script>
 </body>
 </html>
-
-
-
-
-
